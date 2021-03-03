@@ -1,0 +1,653 @@
+#include<stdio.h>
+struct spf
+{
+	char b[10000];	
+};
+
+struct spf a[5],c[7],m0[]={"男子"},m1[]={"女子"};//a[]为院名，c[]为项目
+static p[5]={0,1,2,3,4},j,w,d,x[5][7][8],y[5];//x为各院各项目分数,y为总分,w 院编号,p为院排名
+int i,l,k,s;
+FILE *academy,*item,*score,*total;//文件部分：*academy  学院,*item  项目,*score  得分,*total  总分
+first()
+{
+	char m;
+	system("cls");
+	academy=fopen("学院.txt","r+");
+	if(academy==NULL||fgetc(academy)==EOF)
+	{
+		while(1)
+		{
+			printf("\n\n\n\n\n\n\n\n");
+			printf("\t\t\t\t\t\t********************************************\n");
+			printf("\t\t\t\t\t\t*------------------------------------------*\n");
+			printf("\t\t\t\t\t\t* 无历史记录或无内容是否添加？  y|n or Y|N *\n");
+			printf("\t\t\t\t\t\t*------------------------------------------*\n");
+			printf("\t\t\t\t\t\t********************************************\n");
+			printf("\n\t\t\t\t\t        ");
+			scanf("%c",&m);
+			switch(m)
+			{
+			case 'y':
+			case 'Y':save0();return;
+			case 'n':
+			case 'N':exit(0);
+			default:printf("\n\t\t\t\t\t\t输入错误!请重新输入：");
+			}
+			printf("\n\t\t\t\t\t\t");
+			system("pause");
+			system("cls");
+		}
+	}
+	else
+	{
+		while(1)
+		{
+			printf("\n\n\n\n\n\n\n\n");
+			printf("\t\t\t\t\t\t*************************************\n");
+			printf("\t\t\t\t\t\t*-----------------------------------*\n");
+			printf("\t\t\t\t\t\t*已有原文件，是否覆盖？  y|n or Y|N *\n");
+			printf("\t\t\t\t\t\t*-----------------------------------*\n");
+			printf("\t\t\t\t\t\t*************************************\n");
+			printf("\n\t\t\t\t\t        ");
+			scanf("%c",&m);
+			switch(m)
+			{
+			case 'y':
+			case 'Y':save0();break;
+			case 'n':
+			case 'N':{second();return;}
+			default:printf("\n\t\t\t\t\t\t输入错误!请重新输入：");
+			}
+			printf("\n\t\t\t\t\t\t");
+			system("pause");
+			system("cls");
+		}
+	}
+}
+save0()
+{
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n");
+	academy=fopen("学院.txt","w+");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*     请输入学院信息    *\n");//输入信息
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\n");
+	for(i=0;i<5;i++)
+	{
+		printf("\t\t\t\t\t\t*  编号%d所代表学院：",i+1);
+		scanf("%s",&a[i].b);
+		fwrite(a[i].b,sizeof(a[i].b),1,academy);
+	}
+	fclose(academy);
+	printf("\n\t\t\t\t\t\t     ");
+	system("pause");
+	system("cls");
+	printf("\n");
+	item=fopen("项目.txt","w+");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*   请输入比赛项目信息  *\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\n");
+	for(i=0;i<7;i++)
+	{
+		printf("\t\t\t\t\t\t*  编号%d所代表项目：",i+1);
+		scanf("%s",&c[i].b);
+		fwrite(c[i].b,sizeof(c[i].b),1,item);
+	}
+	fclose(item);
+	printf("\n\t\t\t\t\t\t     ");
+	system("pause");
+	system("cls");
+	score=fopen("得分.txt","w+");
+	for(i=0;i<5;i++)//学院
+	{
+		for(k=0;k<7;k++)//项目
+			for(l=0;l<8;l++)//排名
+			{
+				x[i][k][l]=0;
+				fprintf(score,"%d\n",x[i][k][l]);
+			}
+	}
+	fclose(score);
+	total=fopen("总分.txt","w+");
+		for(i=0;i<5;i++)
+		{
+			y[i]=0;
+			fprintf(total,"%d\n",y[i]);
+		}
+	fclose(total);
+	printf("\n\t\t\t\t\t\t     ");
+	return;
+}
+second()
+{
+	printf("\n\t\t\t\t\t\t");
+	system("cls");
+	academy=fopen("学院.txt","r+");
+	item=fopen("项目.txt","r+");
+	for(i=0;i<5;i++)
+	fscanf(academy,"%s" ,a[i].b);
+	fclose(academy);
+	for(i=0;i<7;i++)
+		fscanf(item,"%s" ,c[i].b);
+	fclose(item);
+	score=fopen("得分.txt","r");
+	for(i=0;i<5;i++)//院
+	{
+		for(k=0;k<7;k++)//项目
+			for(l=0;l<8;l++)//排名
+			{
+				fscanf(score,"%d",&x[i][k][l]);
+				fseek(score,1,SEEK_CUR);
+			}				
+	}
+	fclose(score);
+		total=fopen("总分.txt","r");
+		for(i=0;i<5;i++)
+		{	
+			fscanf(total,"%d",&y[i]);
+		}
+	fclose(total);
+}
+funct1()//输入成绩
+{	
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	while(1)
+	{
+
+		printf("\n\n\n\n\n\n\n\n");
+		printf("\t\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t\t* 你目前在输入%s的成绩*\n",a[w].b);
+		printf("\t\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t\t*************************\n");
+		printf("\n\t\t\t\t\t      ");
+		printf("1为确认输入，0为返回选择菜单：");
+		scanf("%d",&l);
+		switch(l)
+		{
+		case 1:funct4();break;
+		default:{system("cls");return;}
+		}
+	}
+		
+}
+funct2()//各学院总分,按名次(从大到小)
+{
+	score=fopen("得分.txt","a");
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*     各院总分及排名    *\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	for(s=0;s<5;s++)
+	{
+		k=s;
+		l=k+1;
+		for(i=0;i<4;i++)
+		{
+			if(l>4)
+				break;
+			if(y[p[k]]<=y[p[l]])
+			{
+				d=p[k];
+				p[k]=p[l];
+				p[l]=d;
+				l++;
+			}
+			else	l++;
+		}
+		printf("\t\t\t\t\t\t*  %s\t\t%d\t*\n",a[p[s]].b,y[p[s]]);
+	}
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	fclose(score);
+	printf("\n");
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+}
+funct3()//7个项目各学院得分
+{
+	printf("\n\t\t\t\t\t ");
+	system("pause");
+	system("cls");
+	printf("\n");
+	printf("\n\t----------------------------------------------------------");
+	printf("\n\t|    学院    |    项目    |           详细信息           |");
+	printf("\n\t|------------|------------|------------------------------|\n");
+	for(i=0;i<5;i++)//院
+	{
+		printf("\t|    %s    ",a[i].b);
+		for(k=0;k<7;k++)//项目
+		{
+			printf("|    %s    |\t",c[k].b);
+			for(l=0;l<8;l++)//排名
+			{
+				if(x[i][k][l]!=0)
+				{
+					if(l<5)
+					{
+						printf("%s第%d名，得分%8d  |\n\t|",m0,l+1,x[i][k][l]);
+						printf("\t     |\t\t  |\t");
+					}
+					else if(l>=5)
+					{
+						printf("%s第%d名，得分%8d  |\n\t|",m1,l-4,x[i][k][l]);
+						printf("\t     |\t\t  |\t");
+					}
+				}
+			}
+			printf("\t\t\t |");
+			printf("\n\t|\t     ");
+		}
+		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		printf("|------------|------------|------------------------------|\n");
+	}
+	printf("\t --------------------------------------------------------");
+	printf("\n\t\t\t\t\t ");
+	system("pause");
+	system("cls");
+	return;
+}
+funct4()//记录各院项目成绩
+{
+	int oldmscore=0;
+	int oldwscore=0;
+	int sex;
+	oldmscore=x[w][l][i-1];
+	oldwscore=x[w][l][i+4];
+	system("cls");
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*\t项目信息：\t*\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	for(i=0;i<7;i++)
+	printf("\t\t\t\t\t\t*    编号%d代表%s\t*\n",i+1,c[i].b);//展示信息
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t    请输入项目编号：");//项目 k
+	scanf("%d",&k);
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	l=k-1;//l 项目
+	printf("\t\t\t\t\t\t    0代表男子，1代表女子\n");//性别 s
+	printf("\t\t\t\t\t\t    请输入性别编码：");
+	scanf("%d",&sex);
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t    请输入排名：");//排名 i
+	scanf("%d",&i);
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	if(i>=1&&i<=5&&k>=1&&k<=7&&sex>=0&&sex<=1)
+	{
+		d=y[w];
+		if(sex==0)//男子
+		{	
+		  	if(i==1)
+			{
+				y[w]+=7;
+				x[w][l][i-1]+=7;
+			}
+			if(i==2)
+			{
+				y[w]+=5;
+				x[w][l][i-1]+=5;
+			}
+			if(i==3)
+			{
+				y[w]+=3;
+				x[w][l][i-1]+=3;
+			}
+			if(i==4)
+			{
+				y[w]+=2;
+				x[w][l][i-1]+=2;
+			}
+			if(i==5)
+			{
+				y[w]+=1;
+				x[w][l][i-1]+=1;
+			}
+			if(x[w][l][i-1]!=7&&x[w][l][i-1]!=5&&x[w][l][i-1]!=3&&x[w][l][i-1]!=2&&x[w][l][i-1]!=1)
+			{
+				printf("\t\t\t\t\t\t输入有误，请重新输入\n");
+				y[w]=d;
+				x[w][l][i-1]=oldmscore;
+				printf("\n\t\t\t\t\t ");
+				system("pause");
+				system("cls");
+				return;
+			}
+			printf("\n\n\t\t\t\t\t\t    %s%s%s,",a[w].b,m0,c[l].b);
+			printf("第%d名\n",i);
+			while(1)
+			{
+				printf("\n\t\t\t\t\t\t");
+				printf("    1代表正确，0代表错误");
+				printf("\n\t\t\t\t\t\t");
+				printf("    请确认信息是否正确：");
+				scanf("%d",&s);
+				if(s==1)
+				{
+					printf("\n\t\t\t\t\t\t");
+					system("pause");
+					system("cls");
+					break;
+				}
+				else if(s==0)
+				{
+					printf("\n\t\t\t\t\t\t");
+					system("pause");
+					system("cls");
+					return;
+				}
+				else
+					printf("\n\t\t\t\t\t\t     输入无效,请重新输入\n");
+			}
+			score=fopen("得分.txt","r+");
+			total=fopen("总分.txt","r+");
+			{
+				fseek(score,(3*(w*7*8+l*8+i-1)),SEEK_SET);
+				fprintf(score,"%d",x[w][l][i-1]);
+				fseek(total,3*w,SEEK_SET);
+				fprintf(total,"%d",y[w]);
+			}
+			fclose(score);
+			fclose(total);
+		}
+		else if(sex==1)//女子
+		{
+			if(i==1)
+			{
+				y[w]+=5;
+				x[w][l][i+4]+=5;
+			}
+			if(i==2)
+			{
+				y[w]+=3;
+				x[w][l][i+4]+=3;
+			}
+			if(i==3)
+			{
+				y[w]+=2;
+				x[w][l][i+4]+=2;
+			}
+			printf("\n\t\t\t\t\t\t    %s%s%s,",a[w].b,m1,c[l].b);
+			printf("第%d名\n",i);
+			while(1)
+			{
+				printf("\n\t\t\t\t\t\t");
+				printf("    1代表正确，0代表错误");
+				printf("\n\t\t\t\t\t\t");
+				printf("    请确认信息是否正确：");
+				scanf("%d",&s);
+				if(s==1)
+				{
+					printf("\n\t\t\t\t\t\t");
+					system("pause");
+					system("cls");
+					break;
+				}
+				else if(s==0)
+				{
+						printf("\n\t\t\t\t\t\t");
+						system("pause");
+						system("cls");
+						return;
+				}
+				else
+					printf("\n\t\t\t\t\t\t     输入无效,请重新输入\n");
+			}
+			if(x[w][l][i+4]!=5&&x[w][l][i+4]!=3&&x[w][l][i+4]!=2)
+			{
+				printf("\t\t\t\t\t\t输入有误，请重新输入");
+				y[w]=d;
+				x[w][l][i+4]=oldwscore;
+				system("pause");
+				system("cls");
+				return;
+			}
+			score=fopen("得分.txt","r+");
+			total=fopen("总分.txt","r+");
+			{
+				fseek(score,(3*(w*7*8+l*8+i+4)),SEEK_SET);
+				fprintf(score,"%d",x[w][l][i+4]);
+				fseek(total,(3*w),SEEK_SET);
+				fprintf(total,"%d",y[w]);
+			}
+			fclose(score);
+			fclose(total);
+		}
+	}
+	else
+	{
+		printf("\n\t\t\t\t\t\t\t输入无效\n");
+		printf("\t\t\t\t\t\t\t");
+		system("pause");
+		system("cls");
+		return ;
+	}
+}
+funct5()//修改/删除信息
+{
+	int number[8]={0},flag=1;
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t*-----------------------*\n");
+	for(i=0;i<5;i++)
+	printf("\t\t\t\t\t*       编号%d代表 %s\t*\n",i+1,a[i].b);//学院
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\n");
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t  请数输入删除院序号：");
+	scanf("%d",&j);w=j-1;
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\n\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*\t项目信息：\t*\n");
+	for(i=0;i<7;i++)
+	printf("\t\t\t\t\t\t*    编号%d代表%s\t*\n",i+1,c[i].b);//项目
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t    请输入删除项目编号：");
+	scanf("%d",&k);l=k-1;
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n\n\n\n\n\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t*-----------------------*\n");
+	k=0;
+	for(i=0;i<8;i++)//排名
+	{
+		if(x[w][l][i]!=0)
+		{
+			if(i<5)
+			{
+				printf("\t\t\t\t\t");
+				printf("*%d、%s第%d名，得分%5d*\n",flag,m0,i+1,x[w][l][i]);
+				number[flag]=i+1;
+				flag++;
+			}
+			else if(i>=5)
+			{
+				printf("\t\t\t\t\t");
+				printf("*%d、%s第%d名，得分%5d*\n",flag,m1,i-4,x[w][l][i]);
+				number[flag]=i-4;
+				flag++;
+			}
+		}
+		else k++;
+		if(k==8)
+		{
+			printf("\t\t\t\t\t  无得分记录\n");
+			printf("\t\t\t\t\t*-----------------------*\n");
+			printf("\t\t\t\t\t*************************\n");
+			printf("\n\t\t\t\t\t");
+			system("pause");
+			system("cls");
+			return;
+		}	
+	}
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t  请输入需删除编号:");
+	scanf("%d",&s);
+	printf("\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t*************************\n");
+	printf("\n\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	while(1)
+	{
+		printf("\n\n\n\n\n\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t*你目前正在删除的信息为:*\n");
+		if((s-1)<5)
+			printf("\t\t\t\t\t*%s%s%s第%d名，得分%d*\n",a[w].b,c[l].b,m0,number[s],x[w][l][number[s]-1]);
+		else
+			printf("\t\t\t\t\t*%s%s%s第%d名，得分%d*\n",a[w].b,c[l].b,m1,number[s-5],x[w][l][number[s]-1]);
+		printf("\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t*\t删除请按1\t*\n");
+		printf("\t\t\t\t\t*\t退出请按0\t*\n");
+		printf("\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t\t是否删除：");
+		scanf("%d",&i);
+		printf("\n\t\t\t\t\t");
+		system("pause");
+		system("cls");
+		printf("\n\n\n\n\n\n");
+		if(i==1)
+		{
+			score=fopen("得分.txt","r+");
+			total=fopen("总分.txt","r+");
+			if((s-1)<5)
+			{
+				x[w][l][s-1]=0;
+				fseek(score,(3*(w*7*8+l*8+s-1)),SEEK_SET);
+				fprintf(score,"%d",x[w][l][s-1]);
+			}
+			if((s-1)==0)
+				y[w]=y[w]-7;
+			if((s-1)==1||(s-1)==5)
+				y[w]=y[w]-5;
+			if((s-1)==2||(s-1)==6)
+				y[w]=y[w]-3;
+			if((s-1)==3||(s-1)==7)
+				y[w]=y[w]-2;
+			if((s-1)==4)
+				y[w]=y[w]-1;
+			total=fopen("总分.txt","w+");
+			for(w=0;w<5;w++)
+				fprintf(total,"%d\n",y[w]);				
+			fclose(score);
+			fclose(total);
+			return;
+		}
+		else if(i==0)
+		{
+			return;
+		}
+		else
+		{
+			printf("\t\t\t\t*  输入无效请重新输入   *\n");
+		}
+		printf("\t\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t\t*************************\n");
+		printf("\n\t\t\t\t\t");
+		system("pause");
+		system("cls");
+	}
+}
+int main()
+{
+	printf("\n\n\n\n\n\n\n\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*欢迎使用运动会积分系统 *\n");
+	printf("\t\t\t\t\t\t*-----------------------*\n");
+	printf("\t\t\t\t\t\t*************************\n");
+	printf("\n\t\t\t\t\t\t");
+	system("pause");
+	system("cls");
+	printf("\n");
+	first();
+		while(1)
+	{
+		printf("\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\t\t\t\t\t*-----------------------*\n");
+		for(i=0;i<5;i++)//展示信息
+		{
+			printf("\t\t\t\t\t*       编号%d代表 %s\t*\n",i+1,a[i].b);
+		}
+		printf("\t\t\t\t\t*-----------------------*\n");
+		printf("\t\t\t\t\t*************************\n");
+		printf("\n");
+		printf("\t\t\t\t*****************************************\n");
+		printf("\t\t\t\t*---------------------------------------*\n");
+		printf("\t\t\t\t*\t1~5为输入各学院成绩\t\t*\n");
+		printf("\t\t\t\t*\t6为查询各学院的总成绩以及排名\t*\n");
+		printf("\t\t\t\t*\t7为查询7个项目各学院得分  \t*\n");
+		printf("\t\t\t\t*\t8为删除信息\t\t\t*\n");
+		printf("\t\t\t\t*\t0为退出程序\t\t\t*\n");
+		printf("\t\t\t\t*---------------------------------------*\n");
+		printf("\t\t\t\t*****************************************\n");
+		printf("\n");
+		printf("\t\t\t\t\t\t请输入指令：");
+		scanf("%d",&j);
+		w=j-1;
+		switch(j)//选择界面
+		{
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:funct1();break;
+			case 6:funct2();break;
+			case 7:funct3();break;
+			case 8:funct5();break;
+			default:exit(0);
+		}
+	}
+}
